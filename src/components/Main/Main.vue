@@ -15,6 +15,8 @@
               solo
               append-icon="mdi-book-search"
               label="Buscar Libros"
+              v-model="search"
+              @click:append="clickSearch"
             >
             </v-text-field>
           </v-col>
@@ -24,18 +26,19 @@
 
     <v-row class="pt-5" style="background-color: #eeeeee">
       <v-container>
-        <v-row class="fill-height" align="center" justify="center">
+        <v-row class="pb-5" align="center" justify="center">
           <template v-for="(item, i) in semestres">
             <v-col :key="i" cols="12" md="4" class="p-0">
               <v-hover v-slot="{ hover }">
-                <router-link :to="'/semestre/' + item.nombre">
-                <v-card
-                  :class="{ 'on-hover': hover }"
-                  :elevation="hover ? 12 : 2"
-                  tile
-                  height="250">
-                  {{ item.nombre }}
-                </v-card>
+                <router-link :to="'books/semestre/' + item.nombre">
+                  <v-card
+                    :class="{ 'on-hover': hover }"
+                    :elevation="hover ? 12 : 2"
+                    tile
+                    height="250"
+                  >
+                    {{ item.nombre }}
+                  </v-card>
                 </router-link>
               </v-hover>
             </v-col>
@@ -47,23 +50,27 @@
 </template>
 
 <script>
-
 export default {
   data: () => ({
-    page: 0,
+    search: "",
     semestres: [
-      { nombre: "Primero", numero: 1 },
-      { nombre: "Segundo", numero: 2 },
-      { nombre: "Tercero", numero: 3 },
-      { nombre: "Cuarto", numero: 4 },
-      { nombre: "Quinto", numero: 5 },
-      { nombre: "Sexto", numero: 6 },
-      { nombre: "Septimo", numero: 7 },
-      { nombre: "Octavo", numero: 8 },
-      { nombre: "Noveno", numero: 9 },
-      { nombre: "Decimo", numero: 10 },
+      { nombre: "Primero" },
+      { nombre: "Segundo" },
+      { nombre: "Tercero" },
+      { nombre: "Cuarto" },
+      { nombre: "Quinto" },
+      { nombre: "Sexto" },
+      { nombre: "Septimo" },
+      { nombre: "Octavo" },
+      { nombre: "Noveno" },
+      { nombre: "Decimo" },
+      { nombre: "Lectiva" },
     ],
   }),
-  methods: {},
+  methods: {
+    clickSearch () {
+      this.$router.push("books/tittle/" + this.search.replace(/ /g, "-"));
+    },
+  },
 };
 </script>

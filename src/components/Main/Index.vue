@@ -182,7 +182,7 @@
 
             <v-list-item>
               <v-list-item-action>
-                <v-dialog eager v-model="dialog_password" width="500">
+                <v-dialog persistent eager v-model="dialog_password" width="500">
                   <template v-slot:activator="{ on, attrs }">
                     <v-list-item-action-text v-bind="attrs" v-on="on">
                       Cambiar Contraseña
@@ -265,7 +265,7 @@
       </v-menu>
 
       <router-link to="/login" v-if="!user">
-        <v-btn color="blue darken-3">Iniciar Sesion</v-btn>
+        <v-btn @click="getUser" color="blue darken-3">Iniciar Sesion</v-btn>
       </router-link>
     </v-app-bar>
 

@@ -5,19 +5,34 @@
         <v-row align="center" justify="center">
           <v-col class="text-center" cols="12">
             <h2 class="display-2 font-weight-thin white--text">
-              {{ semestre }}
+              {{ name }}
             </h2>
           </v-col>
         </v-row>
       </v-container>
     </v-card>
 
+    <v-fade-transition>
+      <v-alert
+        v-if="alert"
+        text
+        prominent
+        v-model="alert"
+        type="error"
+        icon="mdi-close-circle"
+        border="right"
+        class="ma-2"
+      >
+        {{ alertMessage }}
+      </v-alert>
+    </v-fade-transition>
+
     <v-container fluid>
-      <v-row no-gutters>
+      <v-row no-gutters align="center" justify="center">
         <template v-for="(item, i) in books">
           <v-col :key="i" cols="auto" md="3" class="p-0">
             <v-hover v-slot="{ hover }">
-              <v-card  max-width="300" :class="{ 'on-hover': hover }" tile>
+              <v-card max-width="300" :class="{ 'on-hover': hover }" tile>
                 <v-dialog
                   v-model="dialog"
                   fullscreen
@@ -31,6 +46,7 @@
                       :src="item.photoUrl"
                       :lazy-src="item.photoUrl"
                       class="justify-center"
+                      @click="rating = item.average"
                     >
                       <template v-slot:placeholder>
                         <v-row
@@ -66,7 +82,7 @@
                     </v-toolbar>
                     <v-container class="fill-height">
                       <v-row class="fill-height">
-                        <v-col  class="text-center" cols="4">
+                        <v-col class="text-center" cols="4">
                           <v-img :src="item.photoUrl"> </v-img>
                           <v-btn
                             class="mt-5"
@@ -78,8 +94,21 @@
                             <v-icon>mdi-link</v-icon>
                             Ver Libro
                           </v-btn>
+                          <v-rating
+                            class="pt-5"
+                            empty-icon="mdi-star-outline"
+                            full-icon="mdi-star"
+                            half-icon="mdi-star-half-full"
+                            hover
+                            length="5"
+                            :color="readonly ? 'red lighten-3' : 'blue darken-3'"
+                            :background-color="readonly ? 'red lighten-3' : 'blue darken-3'"
+                            :readonly="readonly"
+                            v-model="rating"
+                            @input="clickRating(item)"
+                          ></v-rating>
                         </v-col>
-                        
+
                         <v-col cols="7">
                           <v-list>
                             <v-list-item>
@@ -87,7 +116,7 @@
                                 <v-list-item-subtitle>
                                   Titulo:
                                 </v-list-item-subtitle>
-                                <v-list-item-title >{{
+                                <v-list-item-title>{{
                                   item.tittle
                                 }}</v-list-item-title>
                               </v-list-item-content>
@@ -97,7 +126,7 @@
                               <v-list-item-content>
                                 <v-list-item-subtitle>
                                   Autor:
-                                  </v-list-item-subtitle>
+                                </v-list-item-subtitle>
                                 <v-list-item-title>{{
                                   item.autor
                                 }}</v-list-item-title>
@@ -108,7 +137,7 @@
                               <v-list-item-content>
                                 <v-list-item-subtitle>
                                   Edicion:
-                                  </v-list-item-subtitle>
+                                </v-list-item-subtitle>
                                 <v-list-item-title>{{
                                   item.edicion
                                 }}</v-list-item-title>
@@ -119,7 +148,7 @@
                               <v-list-item-content>
                                 <v-list-item-subtitle>
                                   Año:
-                                  </v-list-item-subtitle>
+                                </v-list-item-subtitle>
                                 <v-list-item-title>{{
                                   item.year
                                 }}</v-list-item-title>
@@ -130,7 +159,7 @@
                               <v-list-item-content>
                                 <v-list-item-subtitle>
                                   Semestre:
-                                  </v-list-item-subtitle>
+                                </v-list-item-subtitle>
                                 <v-list-item-title>{{
                                   item.semestre
                                 }}</v-list-item-title>
@@ -141,7 +170,7 @@
                               <v-list-item-content>
                                 <v-list-item-subtitle>
                                   Materia:
-                                  </v-list-item-subtitle>
+                                </v-list-item-subtitle>
                                 <v-list-item-title>{{
                                   item.materia
                                 }}</v-list-item-title>
@@ -152,10 +181,11 @@
                               <v-list-item-content>
                                 <v-list-item-subtitle>
                                   Resumen:
-                                  </v-list-item-subtitle>
-                                <v-list-item-action-text class="text-subtitle-1 black--text">{{
-                                  item.resumen
-                                }}</v-list-item-action-text>
+                                </v-list-item-subtitle>
+                                <v-list-item-action-text
+                                  class="text-subtitle-1 black--text"
+                                  >{{ item.resumen }}</v-list-item-action-text
+                                >
                               </v-list-item-content>
                             </v-list-item>
                           </v-list>
@@ -179,7 +209,14 @@ import "firebase/firestore";
 
 export default {
   data: () => ({
-    semestre: "",
+    alert: false,
+    alertMessage: "",
+    name: "",
+    id: "",
+    rating: 0,
+    newAverage: "",
+    newRatings: [],
+    readonly: false,
     dialog: false,
     books: [],
     mask: {
@@ -200,21 +237,61 @@ export default {
       firebase
         .firestore()
         .collection("libros")
-        .where("semestre", "==", this.semestre)
+        .where(this.id, "==", this.name)
         .get()
         .then((querySnapshot) => {
           querySnapshot.forEach((doc) => {
-            this.books.push(doc.data());
+            let data = doc.data();
+            data.id = doc.id;
+            this.books.push(data);
           });
+          if (this.books.length == 0) {
+            this.alertMessage =
+              "No se encontraron libros, por favor verifique e intente nuevamente.";
+            this.alert = true;
+          }
         })
         .catch((error) => {
-          console.log("Error al obtener datos:", error);
+          if ((error.message = "Missing or insufficient permissions")) {
+            this.alertMessage =
+              "Se Produjo un error, debe iniciar Secion para poder acceder a los libros.";
+            this.alert = true;
+          }
         });
+    },
+
+    clickRating(item) {
+      this.newValues(item);
+       firebase
+         .firestore()
+         .collection("libros")
+         .doc(item.id)
+         .set({
+           ratings: this.newRatings,
+           average: this.newAverage,
+         })
+         .then(() => {
+           this.readonly= true;
+         })
+         .catch(function (error) {
+           console.error("Error: ", error);
+         });
+    },
+
+    newValues(item) {
+      this.newRatings = item.ratings;
+      this.newRatings.push(this.rating);
+      let sum = 0;
+      for (let i = 0; i<this.newRatings.length;i++){
+        sum = sum + this.newRatings[i]
+      }
+      this.newAverage = sum / this.newRatings.length
     },
   },
 
   created() {
-    this.semestre = this.$route.params.id;
+    this.name = this.$route.params.name.replace(/-/g, " ");
+    this.id = this.$route.params.id;
     this.getBooks();
   },
 };

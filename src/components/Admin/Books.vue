@@ -42,21 +42,24 @@
                       :items="semestres"
                       :rules="[rules.required]"
                       required
+                      @change="form.materia = ''"
                     ></v-select>
                   </v-col>
 
                   <v-col>
-                    <v-text-field
+                    <v-select
                       prepend-inner-icon="mdi-widgets"
                       label="Materia"
                       color="blue darken-3"
                       background-color="red lighten-5"
                       outlined
                       v-model="form.materia"
+                      :items="materias"
                       :error-messages="error.materia"
+                      no-data-text="Seleccione un Semestre"
                       :rules="[rules.required]"
                       required
-                    ></v-text-field>
+                    ></v-select>
                   </v-col>
                 </v-row>
 
@@ -232,7 +235,9 @@ export default {
         "Octavo",
         "Noveno",
         "Decimo",
+        "Lectiva"
       ],
+
       rules: {
         required: (value) => !!value || "Este Campo es requerido.",
         link: (value) => {
@@ -244,9 +249,9 @@ export default {
             return true;
           }
         },
-        year: (value) => (!!value && value > 1950 && value <= new Date().getFullYear()) ||
-            "Ingrese un Año Valido"
-        
+        year: (value) =>
+          (!!value && value > 1950 && value <= new Date().getFullYear()) ||
+          "Ingrese un Año Valido",
       },
     };
   },
@@ -350,6 +355,113 @@ export default {
         .catch(function (error) {
           console.error("Error: ", error);
         });
+    },
+  },
+  computed: {
+    materias() {
+      switch (this.form.semestre) {
+        case "Primero":
+          return [
+          "Geometría Analítica",
+          "Matemática I",
+          "Educación Física y Salud",
+          "Lógica",
+          "Venezuela Contemporánea",
+        ];
+
+        case "Segundo":
+          return [
+          "Física I",
+          "Matemática II",
+          "Álgebra Lineal",
+          "Creatividad e Inventiva",
+          "Programación I",
+        ];
+
+        case "Tercero":
+          return [
+          "Física II",
+          "Matemática III",
+          "Ecuaciones Diferenciales",
+          "Introducción a la Ingeniería",
+          "Inglés",
+          "Programación II",
+        ];
+
+        case "Cuarto":
+          return [
+          "Fundamentos de Electrónica",
+          "Laboratorio de Física",
+          "Lógica Simbólica",
+          "Estadística I",
+          "Algoritmos y Estructuras I",
+          "Programación III",
+        ];
+
+        case "Quinto":
+          return [
+          "Estructuras Discretas I",
+          "Diseño Lógico",
+          "Estadística II",
+          "Cálculo Numérico",
+          "Algoritmos y Estructuras II",
+          "Programación Web",
+        ];
+
+        case "Sexto":
+          return [
+          "Estructuras Discretas II",
+          "Control e Instrumentación",
+          "Organización del Computador",
+          "Comunicación de Datos",
+          "Sistemas de Bases de Datos",
+          "Sistemas de Programas",
+        ];
+
+        case "Septimo":
+          return [
+          "Traductores e Interpretadores",
+          "Programación Matemática",
+          "Redes de Computadoras",
+          "Sistemas de Operación",
+          "Lenguajes de Programación",
+          "Sistemas de Información I",
+        ];
+
+        case "Octavo":
+          return [
+          "Métodos Cuantitativos",
+          "Arquitectura del Computador",
+          "Metodología de la Investigación",
+          "Interfaces con el Usuario",
+          "Sistemas de Información II",
+        ];
+
+        case "Noveno":
+          return [
+          "Pasantía I o Trabajo de Grado I",
+          "Control de Proyectos",
+          "Ingeniería del Software",
+        ];
+
+        case "Decimo":
+          return [
+          "Cultura",
+          "Pasantía II o Trabajo de Grado II",
+          "Gerencia",
+          "El Hombre y su Ambiente",
+        ];
+        
+        case "Lectiva":
+          return [
+          "FORMACION DE EMPRENDEDORES",
+          "TOPICOS AVANZ ING EN COMPU",
+          "TIC Y NEGOCIOS ELECTRONICO",
+        ];
+
+        default:
+          break;
+      }
     },
   },
 };

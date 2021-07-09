@@ -6,15 +6,14 @@ import Index from './../components/Main/Index'
 import Main from './../components/Main/Main'
 import Suggest from './../components/Main/Suggest'
 import Contact from './../components/Main/Contact'
-import Semestre from './../components/Main/Semestres'
 import Materias from './../components/Main/Materias'
+import Books from './../components/Main/Books'
 
 import Login from './../components/Login/Login'
 import Singin from './../components/Login/Singin'
 
-
 import Admin from './../components/Admin/Admin'
-import Books from './../components/Admin/Books'
+import BooksAdmin from './../components/Admin/Books'
 import BooksTable from './../components/Admin/Subcomponents/BooksTable';
 import SeeSuggest from './../components/Admin/SeeSuggets'
 import Message from './../components/Admin/Message'
@@ -41,12 +40,12 @@ const routes = [{
     component: Main
   },
   {
-    path: '/semestre/:id',
-    component: Semestre
-  }, 
-  {
     path: '/materia',
-    component: Materias
+    component: Materias,
+  },
+  {
+    path: '/books/:id/:name',
+    component: Books
   },]
 },
 {
@@ -67,7 +66,7 @@ const routes = [{
   component: Admin,
   children: [{
     path: '/books',
-    component: Books,
+    component: BooksAdmin,
     children: [{
       path: '/books',
       component: BooksTable

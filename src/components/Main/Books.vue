@@ -266,7 +266,7 @@ export default {
          .firestore()
          .collection("libros")
          .doc(item.id)
-         .set({
+         .update({
            ratings: this.newRatings,
            average: this.newAverage,
          })

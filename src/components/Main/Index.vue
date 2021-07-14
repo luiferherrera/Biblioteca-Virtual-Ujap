@@ -1,7 +1,10 @@
 <template>
   <v-app>
     <v-app-bar app dark color="red">
-      <v-toolbar-title>lOGO</v-toolbar-title>
+      <v-img
+        max-width="170"
+        src="https://firebasestorage.googleapis.com/v0/b/biblioteca-virtual-ujap.appspot.com/o/logos%2Flogo-removebg-preview.png?alt=media&token=bf4620f4-a486-4d7c-92fe-9f9a8a90e8ab"
+      ></v-img>
       <v-divider vertical></v-divider>
 
       <router-link to="/semestre">
@@ -182,7 +185,12 @@
 
             <v-list-item>
               <v-list-item-action>
-                <v-dialog persistent eager v-model="dialog_password" width="500">
+                <v-dialog
+                  persistent
+                  eager
+                  v-model="dialog_password"
+                  width="500"
+                >
                   <template v-slot:activator="{ on, attrs }">
                     <v-list-item-action-text v-bind="attrs" v-on="on">
                       Cambiar Contraseña
@@ -346,8 +354,8 @@ export default {
       this.$refs.form_name.reset();
       this.$refs.form_email.reset();
       this.$refs.form_password.reset();
-      this.errors.email="";
-      this.errors.password="";
+      this.errors.email = "";
+      this.errors.password = "";
     },
 
     close() {

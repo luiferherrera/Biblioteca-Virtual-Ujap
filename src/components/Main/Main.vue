@@ -1,9 +1,13 @@
 <template>
+  <!-- Componente de la vista principal en la cual el usuario pude buscar libros por nombre a partir de un input text
+  y por semestre a travez de una serie de cajas con nombre que representan los diferentes semestres -->
   <v-main>
+    <!-- Caja donde se muestra el titulo de la plataforma junto con el input text para buscar los libros por nombre -->
     <v-card color="blue darken-3" height="250" tile>
       <v-container fill-height>
         <v-row align="center" justify="center">
           <v-col class="text-center" cols="12">
+            <!-- Titulo -->
             <h1 class="display-2 font-weight-thin white--text mt-5">
               Biblioteca Virtual UJAP
             </h1>
@@ -11,6 +15,7 @@
         </v-row>
         <v-row align="center" justify="center">
           <v-col cols="5">
+            <!-- Input text para la busqueda de los libros por nombre -->
             <v-text-field
               solo
               append-icon="mdi-book-search"
@@ -24,20 +29,34 @@
       </v-container>
     </v-card>
   
+      <!-- Cajas correspondiente a cada semestre  -->
     <v-row class="pt-5" style="background-color: #eeeeee">
       <v-container>
         <v-row class="pb-5" align="center" justify="center">
+
+          <!-- for que se ejecutara por cada uno de los semestres (guardados en el array "semestres") lo que permite
+          generar un caja independiente por cada uno -->
           <template v-for="(item, i) in semestres">
             <v-col :key="i" cols="12" md="4" class="p-0">
+
+              <!-- hover para detectar cuando el se pasa el muse por arriba de la caja -->
               <v-hover v-slot="{ hover }">
+
+                <!-- Router link para redirigir a la busqueda por semestres del cual se hizo click -->
                 <router-link :to="'books/semestre/' + item.id">
+
+                  <!-- Caja individual por cada semestre, esta muestra un logo con el numero del semestre y al pasar 
+                  el mouse por encima de esta se muestra el semesntre en texto -->
                   <v-card
                     :class="{ 'on-hover': hover }"
                     :elevation="hover ? 12 : 2"
                     tile
                     height="250"
                   >
+                    <!-- Mostrar el logo del semestre -->
                     <v-img :src="item.link" height="250">
+
+                      <!-- Animacion de carga de la imagen (circulo girando) mientras se carga esta de la base de datos -->
                       <template v-slot:placeholder>
                         <v-row
                           class="fill-height ma-0"
@@ -51,6 +70,8 @@
                         </v-row>
                       </template>
 
+                      <!-- Caja que se despliega con una animacion tipo "expand" por encima del logo, al pasar 
+                      el mouse por arriba de la esta y muestra semestre en texto  -->
                       <v-expand-transition>
                         <div
                           v-if="hover"
@@ -75,7 +96,10 @@
 <script>
 export default {
   data: () => ({
+    // Variable donde se guarda el nombre del libro que se desa buscar ingresado en el text input
     search: "",
+    // Array con la informacion de los diferentes semestres, esta se encuentra guardadas en objetos uno por cada semestre
+    // ID: id para la busqueda, name: nombre en texto del semestre, link: Url del logo del semestre
     semestres: [
       {
         id: "Primero",
@@ -128,7 +152,8 @@ export default {
         link: "https://firebasestorage.googleapis.com/v0/b/biblioteca-virtual-ujap.appspot.com/o/logos%2Fdecimo.png?alt=media&token=625ebb41-d3a7-475a-93ee-a89e7d82cabc",
       },
     ],
-    
+    // Objeto que contiene el estilo que posee la caja que se despliega por encima del logo del semestre al pasar mouse 
+    // por arriba
     mask: {
       width: "100%",
       height: "100%",
@@ -141,7 +166,9 @@ export default {
       bottom: 0,
     },
   }),
+
   methods: {
+    /**Funcion que redirige a la pagina de busquedas por titulo del libro con el ingresado en el input text */
     clickSearch() {
       this.$router.push("books/tittle/" + this.search.replace(/ /g, "-"));
     },

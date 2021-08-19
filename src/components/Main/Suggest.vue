@@ -1,5 +1,10 @@
 <template>
+ <!-- Modulo que permite a los usuarios enviar una sugerencia de un libro que consideran debe ser agregado a la pagina, 
+  Para esto cuenta con un formulario con campos de identificacion del usuario, asi como datos para identificar el 
+  libro que se esta sugiriendo, un campo para en caso que se desee dejar algun tipo de mensaje o comentario, 
+  ademas de el boton correspondiente para enviar la sugerencia.-->
   <v-main>
+    <!-- Caja con fondo azul donde se muestra el titulo de la ventana (Recomendar Libros) -->
     <v-card class="mt-0" color="blue darken-3" height="250" tile>
       <v-container fill-height>
         <v-row align="center" justify="center">
@@ -12,7 +17,9 @@
       </v-container>
     </v-card>
 
+    <!-- Caja donde se encuetra el formulario, la alerta de confirmacion de envio del mensaje, y el boton de envio -->
     <v-container fluid>
+      <!-- Alerta de notificacion que la sugernecia ha sido enviada correctamente -->
       <v-alert
         v-model="alert"
         type="success"
@@ -22,12 +29,14 @@
         >Recomendacion Enviada Correctamente</v-alert
       >
 
+      <!-- Formulario con los campos necesarios.  -->
       <v-form class="mt-5" v-model="valid" ref="form" lazy-validation>
         <v-container>
           <v-row align="center" justify="center">
             <v-col align-self="center" cols="7">
               <v-container>
                 <v-row>
+                  <!-- Input text para el nombre del usuario que envia la sugerencia -->
                   <v-text-field
                     prepend-inner-icon="mdi-account"
                     label="Nombre Completo *"
@@ -42,6 +51,7 @@
 
                 <v-row>
                   <v-col>
+                    <!-- Input select para el rol del usuario para una mejor identificacion (ya sea alumno, profesor u otro)  -->
                     <v-select
                       label="Rol *"
                       :items="roles"
@@ -56,6 +66,7 @@
                   </v-col>
 
                   <v-col v-if="other">
+                    <!-- Input text que se muestra solo si se selecciona el otrol "otro" y asi este sea ingresado manualmente  -->
                     <v-text-field
                       label="Especifique *"
                       color="blue darken-3"
@@ -70,6 +81,7 @@
 
                 <v-row>
                   <v-col>
+                    <!-- Input text para el titulo del libro que se esta recomendando  -->
                     <v-text-field
                       label="Titulo del Libro *"
                       prepend-inner-icon="mdi-book"
@@ -85,6 +97,7 @@
 
                 <v-row>
                   <v-col>
+                    <!-- Input text para el semestre al cual pertenece el libro que se esta recomendando  -->
                     <v-select
                       label="Semestre *"
                       :items="semester"
@@ -99,6 +112,7 @@
                   </v-col>
 
                   <v-col>
+                    <!-- Input text para la materia a la que corresponde el libro  -->
                     <v-text-field
                       label="Materia *"
                       color="blue darken-3"
@@ -113,6 +127,7 @@
 
                 <v-row>
                   <v-col>
+                    <!-- Input text multilinea en caso que se desee agregar un comentario -->
                     <v-textarea
                       label="Comentarios *"
                       color="blue darken-3"
@@ -125,6 +140,8 @@
                     ></v-textarea>
                   </v-col>
                 </v-row>
+
+                <!-- Boton para enviar la sugerencia -->
                 <v-row justify="center">
                   <v-btn
                     @click="click"
@@ -135,6 +152,7 @@
                     Enviar Recomendacion
                   </v-btn>
                 </v-row>
+
               </v-container>
             </v-col>
           </v-row>
@@ -145,15 +163,19 @@
 </template>
 
 <script>
+// Importar librerias de firebase necesarias
 import firebase from "firebase/app";
 import "firebase/firestore";
 
 export default {
   data: () => ({
+    // Variable para el control del alert de mensaje enviado
     alert: false,
+    // Variable para el control que se han llenado todos los campos del formulario y son validos
     valid: false,
+    // Variable para el control que se han llenado todos los campos del formulario y son validos
     loading: false,
-    roles: ["Estudiante", "Profesor", "Otro"],
+    // Objeto donde se guarda lo ingresado en el formulario 
     form: {
       book: "",
       materia: "",
@@ -163,6 +185,7 @@ export default {
       other: "",
       comment: "",
     },
+    // Arrray con los diferentes semestres disponibles para ser usados en el input select correspondiente
     semester: [
       "Primero",
       "Segundo",
@@ -175,9 +198,14 @@ export default {
       "Noveno",
       "Decimo",
     ],
+    // Array con los roles que puede tener el usuario que envia la sugerencia para ser usados en el input select
+    roles: ["Estudiante", "Profesor", "Otro"],
+    // Regla para validar en el formulario que el campo es requerido
     required: (value) => !!value || "Este Campo es requerido.",
   }),
   computed: {
+    /**Propiedad computada para mostrar el input text para introducir el rol manualmente en caso de que seleccione
+     * "Otro" en el select */ 
     other() {
       if (this.form.rol == "Otro") {
         return true;
@@ -185,6 +213,8 @@ export default {
         return false;
       }
     },
+
+    // Propiedad Computada para devolver el rol depenciendo si fue ingresado desde el select o manualmente
     rolFinal() {
       if (this.form.other) {
         return this.form.other;
@@ -194,14 +224,19 @@ export default {
     },
   },
   methods: {
+    // Funcion limpiar y resetear el formulario
     clean() {
       this.$refs.form.reset();
     },
 
+    // Funcion para validar el fomulario y verificar que los campos sean correctos
     validate() {
       this.$refs.form.validate();
     },
 
+    /**Funcion que al dar click en el boton de enviar, valida que los datos ingresados en el formulario 
+    sean validos, se hayan ingresado los campos, rerifica que el usuario haya iniciado sesion y luego 
+    procede a enviar la sugerencia */
     click() {
       this.alert = false;
       this.validate();
@@ -225,6 +260,8 @@ export default {
       }
     },
 
+    /**Funcion que guarda el mensaje en la base de datos dentro de la coleccion "mensajes"
+    */
     sendSuggest() {
       firebase
         .firestore()

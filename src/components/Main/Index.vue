@@ -391,9 +391,10 @@
 </template>
 
 <script>
-// Inportar librerias de firebase necesarias
+// Importar librerias necesarias
 import firebase from "firebase/app";
 import "firebase/auth";
+import Vue from 'vue';
 
 export default {
   data: () => ({
@@ -471,6 +472,11 @@ export default {
       this.$refs.form_name.reset();
       this.$refs.form_email.reset();
       this.$refs.form_password.reset();
+      this.cleanErrors();
+    },
+
+    /**Funcion para limpiar los errores */
+    cleanErrors(){
       this.errors.email = "";
       this.errors.password = "";
     },
@@ -491,7 +497,9 @@ export default {
         .then(() => {
           this.user = false;
         })
-        .catch((error) => {});
+        .catch((error) => {
+          alert(error.message);
+        });
     },
 
     /**Funcion que guarda el nuevo nombre de usuario en la base de datos y actualiza en la plataforma */
@@ -515,7 +523,7 @@ export default {
             this.getUser();
           })
           .catch(function (error) {
-            console.log(error);
+            alert(error.message);
           })
           .finally(() => {
             this.loading_name = false;
@@ -527,10 +535,15 @@ export default {
      * reutenticacion con la contraseña ingresada y luego llama a la funcion para guardar el nuevo email en la BBD
      */
     clickEmail() {
+      // Borrar errores de intentos previos
+      this.cleanErrors();
       this.snackbar = false;
+
       // Validar formulario 
       this.$refs.form_email.validate();
 
+      // Esperar a que termine la validacion del formulario y luego seguir
+      Vue.nextTick(() => {
       // Comprobar que el formulario este valido y se haya ingresado todos los datos
       if (this.form.email && this.form.password && this.valid_email) {
         this.loading_email = true;
@@ -554,11 +567,10 @@ export default {
             if (error.code == "auth/wrong-password") {
               this.errors.password = "Contraseña incorrecta";
             } else {
-              console.log();
-              error;
+              alert(error.message);
             }
           });
-      }
+      }}) 
     },
 
     /**Funcion que actualiza en la base de datos el correo electronico del usuario con el correo ingresado*/
@@ -578,7 +590,7 @@ export default {
           if (error.code == "auth/email-already-in-use") {
             this.errors.email = "Ya existe una cuenta con esa direccion de correo";
           } else {
-            console.log(error);
+            alert(error.message);
           }
         })
         .finally(() => {
@@ -590,12 +602,18 @@ export default {
      * reutenticacion con la contraseña ingresada y luego llama a la funcion para guardar la nueva contrasela en la BBD
      */
     clickPassword() {
+      // Borrar errores de intentos previos
+      this.cleanErrors();
       this.snackbar = false;
-      // Validar formulario 
+
+      // VAlidar el formulario
       this.$refs.form_password.validate();
       
-      // Comprobar que el formulario este valido y se haya ingresado todos los datos
-      if (
+      // Esperar a que termine la validacion del formulario y luego seguir
+      Vue.nextTick(() => {
+
+        // Comprobar que el formulario este valido y se haya ingresado todos los datos
+        if (
         this.form.password &&
         this.form.newPassword &&
         this.form.repeat &&
@@ -622,10 +640,10 @@ export default {
             if (error.code == "auth/wrong-password") {
               this.errors.password = "Contraseña incorrecta";
             } else {
-              console.log(error);
+              alert(error.message);
             }
           });
-      }
+      }})      
     },
 
     /**Funcion que actualiza la contraseña del usario en la BBD con la nueva ingresada desde el formulario */
@@ -640,10 +658,10 @@ export default {
           this.getUser();
         })
         .catch((error) => {
-          console.log(error);
+          alert(error.message);
         })
         .finally(() => {
-          this.loading_email = false;
+          this.loading_password = false;
         });
     },
   },
@@ -663,9 +681,8 @@ export default {
       }
     },
   },
-
-  created() {
     // Obtener el usuario al cargar la pagina
+  created() {
     this.getUser();
   },
 };

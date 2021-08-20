@@ -280,7 +280,7 @@ export default {
           this.clean();
         })
         .catch(function (error) {
-          console.error("Error: ", error);
+          alert(error.message);
         })
         .finally(() => {
           this.loading = false;

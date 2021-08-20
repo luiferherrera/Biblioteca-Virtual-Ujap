@@ -334,12 +334,12 @@ export default {
               this.saveData();
             })
             .catch((error) => {
-              console.log(error);
+              alert(error.message);
               this.loading = false;
             });
         })
         .catch((error) => {
-          console.log(error);
+          alert(error.message);
           this.loading = false;
         });
     },
@@ -371,7 +371,7 @@ export default {
           this.cleanForm();
         })
         .catch(function (error) {
-          console.error("Error: ", error);
+          alert(error.message);
         })
         .finally(() => {
           this.loading = false;

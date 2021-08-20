@@ -219,7 +219,7 @@ export default {
           this.index = -1;
         })
         .catch(function (error) {
-          console.error("Error: ", error);
+          alert(error.message);
         });
     },
 
@@ -246,7 +246,7 @@ export default {
           this.closeDelete();
         })
         .catch(function (error) {
-          console.error("Error removing document: ", error);
+          alert(error.message);
         });
     },
 

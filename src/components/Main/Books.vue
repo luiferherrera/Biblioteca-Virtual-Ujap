@@ -336,6 +336,9 @@ export default {
               "Se Produjo un error, debe iniciar Secion para poder acceder a los libros.";
             this.alert = true;
           }
+          else{
+            alert(error.message);
+          }
         });
     },
 
@@ -359,7 +362,7 @@ export default {
            average: this.newAverage,
          })
          .catch(function (error) {
-           console.error("Error: ", error);
+           alert(error.message);
          });
     },
 

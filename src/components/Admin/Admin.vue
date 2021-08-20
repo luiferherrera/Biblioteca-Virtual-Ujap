@@ -114,7 +114,7 @@ export default {
           this.$router.replace("/login");
         })
         .catch((error) => {
-          console.log(error);
+          alert(error.message);
         });
     },
   },

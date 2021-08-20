@@ -503,7 +503,7 @@ export default {
           this.savePhoto();
         })
         .catch(function (error) {
-          console.log(error);
+          alert(error.message);
           this.booleans.loading = false;
         });
     },
@@ -531,12 +531,12 @@ export default {
               this.saveData();
             })
             .catch((error) => {
-              console.log(error);
+              alert(error.message);
               this.booleans.loading = false;
             });
         })
         .catch((error) => {
-          console.log(error);
+          alert(error.message);
           this.booleans.loading = false;
         });
     },
@@ -565,7 +565,7 @@ export default {
           this.booleans.alert = true;
         })
         .catch(function (error) {
-          console.error("Error: ", error);
+          alert(error.message);
         })
         .finally(() => {
           this.booleans.loading = false;
@@ -595,7 +595,7 @@ export default {
           this.closeDelete();
         })
         .catch(function (error) {
-          console.error("Error removing document: ", error);
+          alert(error.message);
         });
     },
 

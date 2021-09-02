@@ -149,7 +149,7 @@ export default {
       {
         id: "Decimo",
         name: "Decimo Semestre",
-        link: "https://firebasestorage.googleapis.com/v0/b/biblioteca-virtual-ujap.appspot.com/o/logos%2Fdecimo.png?alt=media&token=625ebb41-d3a7-475a-93ee-a89e7d82cabc",
+        link: "https://firebasestorage.googleapis.com/v0/b/biblioteca-virtual-ujap.appspot.com/o/logos%2FDecimo.png?alt=media&token=500fe2f8-4b4e-40aa-ba76-a5940f4c6e3e",
       },
     ],
     // Objeto que contiene el estilo que posee la caja que se despliega por encima del logo del semestre al pasar mouse 

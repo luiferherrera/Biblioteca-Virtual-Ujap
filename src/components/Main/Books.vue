@@ -55,7 +55,7 @@
                 <!-- dialog para generar la ventana modal que ocupa toda la pantalla "fullscreen" y que se despliega
                 con una animacion de barido desd el fondo al dar click en el activador en este caso la portada del libro -->
                 <v-dialog
-                  v-model="dialog"
+                  v-model="dialog[i]"
                   fullscreen
                   hide-overlay
                   transition="dialog-bottom-transition"
@@ -70,7 +70,7 @@
                       v-on="on"
                       :src="item.photoUrl"
                       :lazy-src="item.photoUrl"
-                      class="justify-center"
+                      class="justify-center mt-2"
                       @click="rating = item.average"
                     >
                       <!-- Animacion de carga de la imagen (circulo girando) mientras se carga esta de la base de datos -->
@@ -108,7 +108,7 @@
                     <v-toolbar dark color="primary">
 
                       <!-- Boton para cerrar la ventana modal -->
-                      <v-btn icon dark @click="dialog = false">
+                      <v-btn icon dark @click="closeModal">
                         <v-icon>mdi-close</v-icon>
                       </v-btn>
 
@@ -282,8 +282,8 @@ export default {
     newRatings: [],
     // Variable para controlar el estado de escala de calificacion si permite agregar una nueva calificacion
     readonly: false,
-    // Variable para el control del despliegue de la ventana modal con la informacion del libro
-    dialog: false,
+    // Array cuyos elementos representan variables para el control del despliegue de las deferentes ventanas modal 
+    dialog: [],
     // Array donde se guardan los libros resultantes de la busqueda desde la base de datos
     books: [],
     // Objeto que contiene el estilo que posee la caja que se despliega por encima de la portada del libro 
@@ -320,6 +320,7 @@ export default {
             data.id = doc.id;
             this.books.push(data);
           });
+
           /*En caso de que no se encuentren libros que coincidan mostrar el alert con el mensaje:
             "No se encontraron libros, por favor verifique e intente nuevamente." */
           if (this.books.length == 0) {
@@ -340,6 +341,20 @@ export default {
             alert(error.message);
           }
         });
+    },
+
+    /**Funcion que cierra la ventana modal con la informacion del libro, para esto mediante un ciclo for se recorre el
+     * array correspondiente ("dialog") hasta encontrar la ventana abierta (valor 'true') y procede a cerrarla ('false")
+     */
+    closeModal(){
+      // Recorrer array
+      for(let i=0; i < this.dialog.length; i++){
+        // Buscar ventan abierta
+        if(this.dialog[i] == true){
+          // Si esta abierta cerrarla
+          this.$set(this.dialog, i, false);
+        }
+      }
     },
 
     /**Funcion que en caso de que el usuario le de una calificacion al libro con la escala de entrellas genera los nuevos

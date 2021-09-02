@@ -6,6 +6,66 @@
     <v-main>
       <!-- Contenedor principal de la ventana (fondo rojo) dentro del cual se encuentra la v-card -->
       <v-container fluid fill-height class="red lighten-1">
+
+        <v-dialog
+                    @click:outside="closeDialog"
+                    eager
+                    v-model="dialog"
+                    width="500"
+                  >
+
+
+                    <v-card>
+                      <!-- Toolbar superior de la ventana modal con el titulo de Recuperar contraseña -->
+                      <v-toolbar dark color="blue darken-3">
+                        <!-- titulo -->
+                        <v-toolbar-title>Recuperar Contraseña</v-toolbar-title>
+                      </v-toolbar>
+
+                      <!-- Caja con el formulario con el campo para introducir el correo electronico -->
+                      <v-card-text class="mt-5">
+                        <!-- Formulario para recuperar la contraseña -->
+                        <v-form
+                          v-model="valid_recover"
+                          ref="form_recover"
+                          lazy-validation
+                        >
+                          <!-- Input text para ingresar el correo electronico para recuperar la contraseña -->
+                          <v-text-field
+                            prepend-inner-icon="mdi-email"
+                            label="Correo Electronico"
+                            color="blue darken-3"
+                            background-color="red lighten-5"
+                            outlined
+                            :rules="[rules.required, rules.email]"
+                            :error-messages="errors_recover"
+                            v-model="recover"
+                            required
+                          ></v-text-field>
+                        </v-form>
+                      </v-card-text>
+
+                      <!-- Acciones de la ventana modal, boton enviar el correo de recuperacionde contraseña,
+                    se utilizan separadores (v-spacer) antes y despues para centrarlo dentro de la ventana -->
+                      <v-card-actions>
+                        <!-- separador -->
+                        <v-spacer></v-spacer>
+                        <!-- Boton para enviar el correo de recuperacion -->
+                        <v-btn
+                          @click="clickRecover"
+                          class="mb-2"
+                          color="blue darken-3"
+                          dark
+                          :loading="loading_recover"
+                        >
+                          Recuperar Contraseña
+                        </v-btn>
+                        <!-- separador -->
+                        <v-spacer></v-spacer>
+                      </v-card-actions>
+                    </v-card>
+                  </v-dialog>
+                  
         <v-row align="center" justify="center">
           <v-col xl="12" sm="8" md="4">
             <!-- v-card dentro de la cual se encuentra el formulario  -->
@@ -45,12 +105,23 @@
                     @keyup.enter="doLogin"
                     required
                   ></v-text-field>
+                  <a href="#" @click.stop="dialog=true">Olvidaste la Contraseña?</a>
+  
                 </v-form>
               </v-card-text>
               <v-card-actions>
                 <!-- Boton para redirigir al modulo para crear cuenta  -->
                 <router-link to="/singin" class="ml-2">
-                  <v-btn dark color="blue darken-3" elevation="2" rounded outlined small> Crear cuenta </v-btn>
+                  <v-btn
+                    dark
+                    color="blue darken-3"
+                    elevation="2"
+                    rounded
+                    outlined
+                    small
+                  >
+                    Crear cuenta
+                  </v-btn>
                 </router-link>
 
                 <!-- Separador para colocar los botones a la izquierda y derecha -->
@@ -70,6 +141,24 @@
           </v-col>
         </v-row>
       </v-container>
+
+      <!-- Snackbar para notificar que el correo de recuperacion fue enviado correctamente -->
+      <v-snackbar v-model="snackbar" timeout="3000" bottom color="success">
+        <v-icon>mdi-email-send</v-icon>
+        Se ha enviado un correo para recuperar la contraseña
+
+        <!-- Boton para cerrar el snackbar -->
+        <template v-slot:action="{ attrs }">
+          <v-btn
+            color="blue darken-3"
+            text
+            v-bind="attrs"
+            @click="snackbar = false"
+          >
+            Cerrar
+          </v-btn>
+        </template>
+      </v-snackbar>
     </v-main>
   </v-app>
 </template>
@@ -85,16 +174,28 @@ export default {
     return {
       // Variable para controlar mientras se este iniciando sesion
       loading: false,
+      // Variable para el control mientras se envia el correo de recuperacion de contraseña
+      loading_recover: false,
+      // Variable para el control de la ventana modal para recuperar la contraseña
+      dialog: false,
+      // Varaible para el control de la snackbar para notificar que se ha enviado el correro de recuperacion
+      snackbar: false,
       // Variable para controlar que los datos del formulario sean validos
       valid: false,
+      // Variable para control que los datos del formulario para recuperar la contraseña sean validos
+      valid_recover: false,
       // Objeto donde se guardan los datos introducidos el formulario
       form: {
         email: "",
         password: "",
       },
+      // Variable donde se guarda el correo ingresado para recuperar la contraseña desde la ventana modal
+      recover: "",
       // Variables para el control de errores al inicar sesion
       errors_email: "",
       errors_password: "",
+      // Variable para el control de errores para recuperar la contraseña
+      errors_recover: "",
       // Reglas para validar los campos del formulario
       rules: {
         // Regla para los campos requeridos
@@ -117,7 +218,7 @@ export default {
       this.errors_password = "";
     },
 
-    /**Funcion que al hacer click en el boton de iniciar sesion valida el formulario y valida que los datos esten 
+    /**Funcion que al hacer click en el boton de iniciar sesion valida el formulario y valida que los datos esten
      * correctos luego llama a la funcion para iniciar sesion
      */
     clickLogin() {
@@ -140,14 +241,7 @@ export default {
       firebase
         .auth()
         .signInWithEmailAndPassword(this.form.email, this.form.password)
-        .then((user) => {
-          // Verificar si el usuario es el adminstrador y redirigir a la ventana principal o la consola de adminstracion
-          if (user.uid == "YOXF3pYuGlOYYWDzGKqy2mAh24Q2") {
-            this.$router.push("/admin");
-          } else {
-            this.$router.push("/");
-          }
-        })
+        .then((user) => {})
         .catch((error) => {
           // Manejo de errores al iniciar sesion
           switch (error.code) {
@@ -171,6 +265,48 @@ export default {
         .finally(() => {
           this.loading = false;
         });
+    },
+
+    clickRecover() {
+      (this.snackbar = false), (this.errors_recover = "");
+      this.$refs.form_recover.validate();
+      Vue.nextTick(() => {
+        if (this.recover && this.valid_recover) {
+          this.loading_recover = true;
+          firebase
+            .auth()
+            .sendPasswordResetEmail(this.recover)
+            .then(() => {
+              this.snackbar = true;
+              this.dialog= false;
+              this.closeDialog();
+            })
+            .catch((error) => {
+              // Si se produce un error verificar el tipo y mostrar el mensaje
+              switch (error.code) {
+                // Error correo electronico invalido
+                case "auth/invalid-email":
+                  this.errors_recover = "Ingrese una Direccion de Correo Valida";
+                  break;
+                // Error de no existe cuenta con el correo ingresado
+                case "auth/user-not-found":
+                  this.errors_recover =
+                    "No se Encontro una Cuenta con esta Direccion de Correo";
+                  break;
+                default:
+                  alert(error.message);
+              }
+            })
+            .finally(() => {
+              this.loading_recover = false;
+            });
+        }
+      });
+    },
+
+    closeDialog() {
+      this.$refs.form_recover.reset();
+      this.errors_recover = "";
     },
   },
 };

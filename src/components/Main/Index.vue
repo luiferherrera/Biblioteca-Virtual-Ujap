@@ -124,7 +124,7 @@
                       > 
                         <!-- Input text para ingresar el nuevo nombre de usuario -->
                         <v-text-field
-                          prepend-inner-icon="mdi-email"
+                          prepend-inner-icon="mdi-account"
                           label="Nuevo Nombre"
                           color="blue darken-3"
                           background-color="red lighten-5"
@@ -496,6 +496,7 @@ export default {
         .signOut()
         .then(() => {
           this.user = false;
+          this.$router.push("/");
         })
         .catch((error) => {
           alert(error.message);
@@ -585,7 +586,6 @@ export default {
           this.getUser(); 
         })
         .catch((error) => {
-          this.loading_email = false;
           // Si se produce un error verificar el tipo y mostrar el mensaje
           if (error.code == "auth/email-already-in-use") {
             this.errors.email = "Ya existe una cuenta con esa direccion de correo";

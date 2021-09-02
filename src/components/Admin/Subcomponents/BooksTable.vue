@@ -27,7 +27,14 @@
         </v-toolbar>
 
         <!-- Ventana Modal para modificar el registro de un libro -->
-        <v-dialog eager v-model="booleans.dialog" ref="edit" max-width="1000">
+        <v-dialog
+          persistent
+          fullscreen
+          eager
+          v-model="booleans.dialog"
+          ref="edit"
+          max-width="1000"
+        >
           <v-card>
             <!-- Toolbar superior de la ventana modal donde se muestra el titulo -->
             <v-toolbar dark color="indigo">
@@ -184,6 +191,8 @@
                             label="Portada"
                             v-model="photo"
                             @change="photoChange"
+                            :rules="[rules.size]"
+                            show-size
                             required
                           ></v-file-input>
                         </v-row>
@@ -224,9 +233,10 @@
             </v-card-actions>
           </v-card>
         </v-dialog>
+        
 
         <!-- Ventana para Borrar el registro -->
-        <v-dialog v-model="booleans.dialogDelete" max-width="325px">
+        <v-dialog persistent v-model="booleans.dialogDelete" max-width="325px">
           <v-card dark color="indigo">
             <!-- Mensaje de confirmacion para borrar la ventana -->
             <v-card-title>
@@ -299,7 +309,7 @@
       <!-- Boton para cerrar el snackbar -->
       <template v-slot:action="{ attrs }">
         <v-btn
-          color="indigo"
+          color="blue darken-3"
           text
           v-bind="attrs"
           @click="booleans.snackbar = false"
@@ -410,6 +420,12 @@ export default {
           return true;
         }
       },
+      // Regla para validar el tamaño de la foto de portada
+      size: (value) =>
+        !value ||
+        value.size < 2000000 ||
+        "La portada debe tener un tamaño menor a 2MB",
+      // Regla para validar que se ingrese un año valido
       year: (value) =>
         (!!value && value > 1950 && value <= new Date().getFullYear()) ||
         "Ingrese un Año Valido",
@@ -581,10 +597,20 @@ export default {
       this.booleans.dialogDelete = true;
     },
 
-    /**Funcion elimina de la base de datos, a partit de su ID
-     * el documento correspondienten al registro que se desea borrar
+    /**Funcion elimina de la base de datos, a partit de su ID y su ruta
+     * el documento y la foto de portada correspondienten al registro que se desea borrar
      */
     deleteItemConfirm() {
+      // Borrar foto de portada
+      var storage = firebase.storage().ref();
+      storage
+        .child(this.form.photoRef)
+        .delete()
+        .then(() => {})
+        .catch(function (error) {
+          alert(error.message);
+        });
+      // Borrar Registro del libro
       firebase
         .firestore()
         .collection("libros")

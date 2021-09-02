@@ -17,7 +17,7 @@
       <!-- Formulario para ingresar los datos necesarios para guerdar el libro -->
       <v-form v-model="valid" ref="form" lazy-validation>
         <v-container>
-          <v-row justify="center">
+          <v-row justify="center" align="center">
             <v-col class="text-center" cols="7">
               <v-container>
                 <v-row>
@@ -143,7 +143,7 @@
               <v-container>
                 <v-row>
                   <!-- Caja para previsualizar la portada del libro -->
-                  <v-img :src="form.photoUrl"></v-img>
+                  <v-img height="450" :src="form.photoUrl"></v-img>
                 </v-row>
 
                 <v-row>
@@ -155,7 +155,8 @@
                     label="Portada"
                     v-model="form.photo"
                     @change="photoChange"
-                    :rules="[rules.required]"
+                    :rules="[rules.required, rules.size]"
+                    show-size
                     required
                   ></v-file-input>
                 </v-row>
@@ -238,7 +239,6 @@ export default {
         "Octavo",
         "Noveno",
         "Decimo",
-        "Lectiva",
       ],
       // Reglas para validar los datos dentro del formulario
       rules: {
@@ -254,6 +254,11 @@ export default {
             return true;
           }
         },
+        // Regla para validar el tamaño de la foto de portada
+        size: (value) =>
+          !value ||
+          value.size < 2000000 ||
+          "La portada debe tener un tamaño menor a 2MB",
         // Regla para validar que se ingrese un año valido
         year: (value) =>
           (!!value && value > 1950 && value <= new Date().getFullYear()) ||
@@ -293,22 +298,23 @@ export default {
     clickSave() {
       this.validar();
       this.alert = false;
-      if (
-        this.form.tittle &&
-        this.form.semestre &&
-        this.form.materia &&
-        this.form.autor &&
-        this.form.year &&
-        this.form.edicion &&
-        this.form.resumen &&
-        this.form.photo &&
-        this.form.link
-      ) {
-        if (this.valid) {
+      Vue.nextTick(() => {
+        if (
+          this.form.tittle &&
+          this.form.semestre &&
+          this.form.materia &&
+          this.form.autor &&
+          this.form.year &&
+          this.form.edicion &&
+          this.form.resumen &&
+          this.form.photo &&
+          this.form.link &&
+          this.valid
+        ) {
           this.loading = true;
           this.saveBook();
         }
-      }
+      });
     },
 
     /* Funcion que guarda la  foto de portada en la base de datos y obtiene el link de la misma,
@@ -364,7 +370,7 @@ export default {
           photoRef: this.form.photoRef,
           link: this.form.link,
           ratings: [],
-          average: 0
+          average: 0,
         })
         .then(() => {
           this.alert = true;
@@ -475,14 +481,6 @@ export default {
             "Gerencia",
             "El Hombre y su Ambiente",
           ];
-
-        case "Lectiva":
-          return [
-            "FORMACION DE EMPRENDEDORES",
-            "TOPICOS AVANZ ING EN COMPU",
-            "TIC Y NEGOCIOS ELECTRONICO",
-          ];
-
         default:
           break;
       }

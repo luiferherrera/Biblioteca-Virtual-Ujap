@@ -237,7 +237,7 @@
 
         <!-- Ventana para Borrar el registro -->
         <v-dialog persistent v-model="booleans.dialogDelete" max-width="325px">
-          <v-card dark color="indigo">
+          <v-card dark color="blue darken-3">
             <!-- Mensaje de confirmacion para borrar la ventana -->
             <v-card-title>
               <v-spacer></v-spacer>
@@ -251,7 +251,7 @@
               <!-- Boton de cancelar y cerrar -->
               <v-btn dark plain @click="closeDelete">Cancelar</v-btn>
               <!-- Boton de Confirmar borrar y cerrar la ventana -->
-              <v-btn color="error" plain @click="deleteItemConfirm"
+              <v-btn color="red" plain @click="deleteItemConfirm"
                 >Borrar</v-btn
               >
               <v-spacer></v-spacer>
@@ -491,7 +491,6 @@ export default {
      */
     clickSave() {
       this.booleans.alert = false;
-      // this.cleanError();
       //validar formulario
       this.validar();
       if (this.booleans.valid) {
@@ -518,7 +517,7 @@ export default {
         .then(() => {
           this.savePhoto();
         })
-        .catch(function (error) {
+        .catch((error) => {
           alert(error.message);
           this.booleans.loading = false;
         });

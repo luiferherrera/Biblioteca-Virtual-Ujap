@@ -21,10 +21,12 @@ import Singin from './../components/Login/Singin'
 
 // Importar componentes de la consola de administracion
 import Admin from './../components/Admin/Admin'
+import Files from './../components/Admin/Files'
 import BooksAdmin from './../components/Admin/Books'
 import BooksTable from './../components/Admin/Subcomponents/BooksTable';
 import SeeSuggest from './../components/Admin/SeeSuggest'
 import Message from './../components/Admin/Message'
+
 
 
 Vue.use(Router)
@@ -88,6 +90,11 @@ const routes = [{
   component: Admin,
   // Componetes hijos que se mostraran dentro del componente principal de la consola de administracion
   children: [
+    // Ruta a la vista para guardar archivos de libros en la base de datos
+    {
+      path: '/files',
+      component: Files,
+    },
     // Ruta de la vista para agregar un nuevo libro a la plataforma
     {
     path: '/books',
@@ -155,7 +162,7 @@ router.beforeEach((to, from, next) => {
         if (user.uid == 'YOXF3pYuGlOYYWDzGKqy2mAh24Q2') {
           // Si el usuario es el administrador redirigir a la consola de administracion
           next({
-            path: '/admin',
+            path: '/files',
             query: { redirect: to.fullPath }
           })
         } else {

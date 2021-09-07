@@ -6,66 +6,63 @@
     <v-main>
       <!-- Contenedor principal de la ventana (fondo rojo) dentro del cual se encuentra la v-card -->
       <v-container fluid fill-height class="red lighten-1">
-
         <v-dialog
-                    @click:outside="closeDialog"
-                    eager
-                    v-model="dialog"
-                    width="500"
-                  >
+          @click:outside="closeDialog"
+          eager
+          v-model="dialog"
+          width="500"
+        >
+          <v-card>
+            <!-- Toolbar superior de la ventana modal con el titulo de Recuperar contraseña -->
+            <v-toolbar dark color="blue darken-3">
+              <!-- titulo -->
+              <v-toolbar-title>Recuperar Contraseña</v-toolbar-title>
+            </v-toolbar>
 
+            <!-- Caja con el formulario con el campo para introducir el correo electronico -->
+            <v-card-text class="mt-5">
+              <!-- Formulario para recuperar la contraseña -->
+              <v-form
+                v-model="valid_recover"
+                ref="form_recover"
+                lazy-validation
+              >
+                <!-- Input text para ingresar el correo electronico para recuperar la contraseña -->
+                <v-text-field
+                  prepend-inner-icon="mdi-email"
+                  label="Correo Electronico"
+                  color="blue darken-3"
+                  background-color="red lighten-5"
+                  outlined
+                  :rules="[rules.required, rules.email]"
+                  :error-messages="errors_recover"
+                  v-model="recover"
+                  required
+                ></v-text-field>
+              </v-form>
+            </v-card-text>
 
-                    <v-card>
-                      <!-- Toolbar superior de la ventana modal con el titulo de Recuperar contraseña -->
-                      <v-toolbar dark color="blue darken-3">
-                        <!-- titulo -->
-                        <v-toolbar-title>Recuperar Contraseña</v-toolbar-title>
-                      </v-toolbar>
-
-                      <!-- Caja con el formulario con el campo para introducir el correo electronico -->
-                      <v-card-text class="mt-5">
-                        <!-- Formulario para recuperar la contraseña -->
-                        <v-form
-                          v-model="valid_recover"
-                          ref="form_recover"
-                          lazy-validation
-                        >
-                          <!-- Input text para ingresar el correo electronico para recuperar la contraseña -->
-                          <v-text-field
-                            prepend-inner-icon="mdi-email"
-                            label="Correo Electronico"
-                            color="blue darken-3"
-                            background-color="red lighten-5"
-                            outlined
-                            :rules="[rules.required, rules.email]"
-                            :error-messages="errors_recover"
-                            v-model="recover"
-                            required
-                          ></v-text-field>
-                        </v-form>
-                      </v-card-text>
-
-                      <!-- Acciones de la ventana modal, boton enviar el correo de recuperacionde contraseña,
+            <!-- Acciones de la ventana modal, boton enviar el correo de recuperacionde contraseña,
                     se utilizan separadores (v-spacer) antes y despues para centrarlo dentro de la ventana -->
-                      <v-card-actions>
-                        <!-- separador -->
-                        <v-spacer></v-spacer>
-                        <!-- Boton para enviar el correo de recuperacion -->
-                        <v-btn
-                          @click="clickRecover"
-                          class="mb-2"
-                          color="blue darken-3"
-                          dark
-                          :loading="loading_recover"
-                        >
-                          Recuperar Contraseña
-                        </v-btn>
-                        <!-- separador -->
-                        <v-spacer></v-spacer>
-                      </v-card-actions>
-                    </v-card>
-                  </v-dialog>
-                  
+            <v-card-actions>
+              <!-- separador -->
+              <v-spacer></v-spacer>
+              <!-- Boton para enviar el correo de recuperacion -->
+              <v-btn
+                @click="clickRecover"
+                class="mb-2"
+                color="blue darken-3"
+                dark
+                :loading="loading_recover"
+              >
+                Recuperar Contraseña
+              </v-btn>
+              <!-- separador -->
+              <v-spacer></v-spacer>
+            </v-card-actions>
+          </v-card>
+        </v-dialog>
+
         <v-row align="center" justify="center">
           <v-col xl="12" sm="8" md="4">
             <!-- v-card dentro de la cual se encuentra el formulario  -->
@@ -105,8 +102,9 @@
                     @keyup.enter="doLogin"
                     required
                   ></v-text-field>
-                  <a href="#" @click.stop="dialog=true">Olvidaste la Contraseña?</a>
-  
+                  <a href="#" @click.stop="dialog = true"
+                    >Olvidaste la Contraseña?</a
+                  >
                 </v-form>
               </v-card-text>
               <v-card-actions>
@@ -267,18 +265,27 @@ export default {
         });
     },
 
+    /**Funcion que al dar click en el boton para recuperar la contraseña valida que se haya introducido un correo 
+     * electronico valido y luego procede a solicitar el mensaje de recuperacion de contrasña en caso que exista la 
+     * cuenta
+     */
     clickRecover() {
+      // Cerrar la snackabar si esta abierta y limpiar errores
       (this.snackbar = false), (this.errors_recover = "");
+      // Validar el formulario
       this.$refs.form_recover.validate();
+      // Esperar a que termine la validacion
       Vue.nextTick(() => {
+        // Verificar que se haya ingresado un correo valido
         if (this.recover && this.valid_recover) {
           this.loading_recover = true;
+          // Solicitar el mensaje de recuperacion de contraseña para el correo intresado
           firebase
             .auth()
             .sendPasswordResetEmail(this.recover)
             .then(() => {
+              // Una vez enviado el mensaje mostrar la snackbar y cerrar la ventana modal
               this.snackbar = true;
-              this.dialog= false;
               this.closeDialog();
             })
             .catch((error) => {
@@ -286,7 +293,8 @@ export default {
               switch (error.code) {
                 // Error correo electronico invalido
                 case "auth/invalid-email":
-                  this.errors_recover = "Ingrese una Direccion de Correo Valida";
+                  this.errors_recover =
+                    "Ingrese una Direccion de Correo Valida";
                   break;
                 // Error de no existe cuenta con el correo ingresado
                 case "auth/user-not-found":
@@ -304,7 +312,9 @@ export default {
       });
     },
 
+    /**Funcion para cerrar la ventana modal y vaciar el formulario */
     closeDialog() {
+      this.dialog = false;
       this.$refs.form_recover.reset();
       this.errors_recover = "";
     },

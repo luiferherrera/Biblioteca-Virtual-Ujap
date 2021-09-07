@@ -12,7 +12,7 @@
       <!-- Lista con los items del sidebar -->
       <v-list dense color="blue darken-3" dark>
         <!-- Item para acceder a la ventana principal -->
-        <v-list-item @click="title = 'Administrador'" link to="/admin">
+        <v-list-item @click="title = 'Administrador'" link to="/files">
           <v-list-item-action>
             <v-icon>mdi-account-cog</v-icon>
           </v-list-item-action>
@@ -78,7 +78,7 @@
             rounded
             small
           >
-            Cambiar Contraseña
+          Cambiar Contraseña
           </v-btn>
         </template>
 
@@ -221,6 +221,7 @@ export default {
         newPassword: "",
         repeat: "",
       },
+      // Variable para el control de errores al cambiar la contraseña
       errors_password: "",
       // Reglas para la validacion de los campos del formulario
       rules: {

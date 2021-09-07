@@ -38,16 +38,20 @@
     <!-- Contenedor donde se mostrarar los libros que coincidan con la busqueda realizada -->
     <v-container fluid>
       <v-row no-gutters align="center" justify="center">
+
         <!-- for que se ejecutara por cada uno de los libros resultados (guardados en el array "books") lo que permite
         generar un caja independiente por cada libro -->
         <template v-for="(item, i) in books">
           <v-col :key="i" cols="auto" md="3" class="p-0">
+
             <!-- hover para detectar cuando el se pasa el muse por arriba de la caja -->
             <v-hover v-slot="{ hover }">
+
               <!-- Caja individual de cada del libro resultado de la busqueda, esta muestra la portada del libro
               y el titulo al pasar el mouse, ademas funciona como activador para mostrar una ventana modal donde 
               se ve toda la informacion del libro, el boton para abrir el libro y la escala para calificarlo -->
               <v-card max-width="300" :class="{ 'on-hover': hover }" tile>
+
                 <!-- dialog para generar la ventana modal que ocupa toda la pantalla "fullscreen" y que se despliega
                 con una animacion de barido desd el fondo al dar click en el activador en este caso la portada del libro -->
                 <v-dialog
@@ -59,6 +63,7 @@
                   <!-- Activador de dialog o el elemnto que se mostrara normalmente en la caja individual del libro
                    hasta que se de click sobre esta y abra la ventana modal con la informacion correspondiente  -->
                   <template v-slot:activator="{ on, attrs }">
+
                     <!-- Mostrar la portada del libro como activador -->
                     <v-img
                       v-bind="attrs"
@@ -98,8 +103,10 @@
 
                   <!-- Contenido de la ventana modal con la informacion del libro -->
                   <v-card>
+
                     <!-- Toolbar superior color azul que contiene el boton par cerrar la ventana modal y el titulo -->
                     <v-toolbar dark color="primary">
+
                       <!-- Boton para cerrar la ventana modal -->
                       <v-btn icon dark @click="closeModal">
                         <v-icon>mdi-close</v-icon>
@@ -112,8 +119,10 @@
                     <!-- Conenedor donde se muestra la informacion del libro -->
                     <v-container class="fill-height">
                       <v-row class="fill-height">
+
                         <!-- Dividir la ventana en dos partes (Izquierda y derecha) -->
                         <v-col class="text-center" cols="4">
+
                           <!-- Mostar la portada del libro  -->
                           <v-img :src="item.photoUrl"> </v-img>
 
@@ -123,8 +132,7 @@
                             color="green"
                             dark
                             :href="item.link"
-                            target="_blank"
-                          >
+                            target="_blank">
                             <v-icon>mdi-link</v-icon>
                             Ver Libro
                           </v-btn>
@@ -139,12 +147,8 @@
                             half-icon="mdi-star-half-full"
                             hover
                             length="5"
-                            :color="
-                              readonly ? 'red lighten-3' : 'blue darken-3'
-                            "
-                            :background-color="
-                              readonly ? 'red lighten-3' : 'blue darken-3'
-                            "
+                            :color="readonly ? 'red lighten-3' : 'blue darken-3'"
+                            :background-color="readonly ? 'red lighten-3' : 'blue darken-3'"
                             :readonly="readonly"
                             v-model="rating"
                             @input="clickRating(item)"
@@ -153,6 +157,7 @@
 
                         <!-- Segunda parte de la ventana modal (lado derecho) -->
                         <v-col cols="7">
+
                           <!-- Lista para dar formato y mostrar los elementos en orden -->
                           <v-list>
                             <!-- Mostral el titulo completo de libro -->
@@ -162,7 +167,7 @@
                                   Titulo:
                                 </v-list-item-subtitle>
                                 <v-list-item-title>
-                                  {{ item.tittle }}
+                                  {{item.tittle}}
                                 </v-list-item-title>
                               </v-list-item-content>
                             </v-list-item>
@@ -174,7 +179,7 @@
                                   Autor:
                                 </v-list-item-subtitle>
                                 <v-list-item-title>
-                                  {{ item.autor }}
+                                  {{item.autor}}
                                 </v-list-item-title>
                               </v-list-item-content>
                             </v-list-item>
@@ -186,7 +191,7 @@
                                   Edicion:
                                 </v-list-item-subtitle>
                                 <v-list-item-title>
-                                  {{ item.edicion }}
+                                  {{item.edicion}}
                                 </v-list-item-title>
                               </v-list-item-content>
                             </v-list-item>
@@ -198,7 +203,7 @@
                                   Año:
                                 </v-list-item-subtitle>
                                 <v-list-item-title>
-                                  {{ item.year }}
+                                  {{item.year}}
                                 </v-list-item-title>
                               </v-list-item-content>
                             </v-list-item>
@@ -210,7 +215,7 @@
                                   Semestre:
                                 </v-list-item-subtitle>
                                 <v-list-item-title>
-                                  {{ item.semestre }}
+                                  {{item.semestre}}
                                 </v-list-item-title>
                               </v-list-item-content>
                             </v-list-item>
@@ -222,7 +227,7 @@
                                   Materia:
                                 </v-list-item-subtitle>
                                 <v-list-item-title>
-                                  {{ item.materia }}
+                                  {{item.materia }}
                                 </v-list-item-title>
                               </v-list-item-content>
                             </v-list-item>
@@ -234,8 +239,7 @@
                                   Resumen:
                                 </v-list-item-subtitle>
                                 <v-list-item-action-text
-                                  class="text-subtitle-1 black--text"
-                                >
+                                  class="text-subtitle-1 black--text">
                                   {{ item.resumen }}
                                 </v-list-item-action-text>
                               </v-list-item-content>
@@ -278,11 +282,11 @@ export default {
     newRatings: [],
     // Variable para controlar el estado de escala de calificacion si permite agregar una nueva calificacion
     readonly: false,
-    // Array cuyos elementos representan variables para el control del despliegue de las deferentes ventanas modal
+    // Array cuyos elementos representan variables para el control del despliegue de las deferentes ventanas modal 
     dialog: [],
     // Array donde se guardan los libros resultantes de la busqueda desde la base de datos
     books: [],
-    // Objeto que contiene el estilo que posee la caja que se despliega por encima de la portada del libro
+    // Objeto que contiene el estilo que posee la caja que se despliega por encima de la portada del libro 
     // (activador de la ventana modal) al pasar mouse por arriba y que incluye en titulo del libro
     mask: {
       width: "100%",
@@ -302,43 +306,6 @@ export default {
      * y los guarda en el array "books", en caso de que no se encuentren libros o que el usuario no haya inciado sesion
      * despliega el alert con el mensaje correspondiente
      */
-    // getBooks() {
-    //   // Realizar consulta a partir de la caracteristica a buscar (id) y el termino a bucar (name)
-    //   firebase
-    //     .firestore()
-    //     .collection("libros")
-    //     .where(this.id, "==", this.name)
-    //     .get()
-    //     .then((querySnapshot) => {
-    //       querySnapshot.forEach((doc) => {
-    //         // guardar libros en el array "books"
-    //         let data = doc.data();
-    //         data.id = doc.id;
-    //         this.books.push(data);
-    //       });
-
-    //       /*En caso de que no se encuentren libros que coincidan mostrar el alert con el mensaje:
-    //         "No se encontraron libros, por favor verifique e intente nuevamente." */
-    //       if (this.books.length == 0) {
-    //         this.alertMessage =
-    //           "No se encontraron libros, por favor verifique e intente nuevamente.";
-    //         this.alert = true;
-    //       }
-    //     })
-    //     .catch((error) => {
-    //       /*En caso de que el usuario no haya iniciado sesion mostrar el alert con el mensaje:
-    //         "Se Produjo un error, debe iniciar Secion para poder acceder a los libros." */
-    //       if ((error.message = "Missing or insufficient permissions")) {
-    //         this.alertMessage =
-    //           "Se Produjo un error, debe iniciar Secion para poder acceder a los libros.";
-    //         this.alert = true;
-    //       }
-    //       else{
-    //         alert(error.message);
-    //       }
-    //     });
-    // },
-
     getBooks() {
       // Realizar consulta a partir de la caracteristica a buscar (id) y el termino a bucar (name)
       firebase
@@ -348,17 +315,10 @@ export default {
         .get()
         .then((querySnapshot) => {
           querySnapshot.forEach((doc) => {
-            let already_exits = false;
-            for (let i = 0; i < this.books.length; i++) {
-              if (this.books[i].tittle == doc.data().tittle) {
-                already_exits = true;
-              }
-            }
-            if (!already_exits) {
-              let data = doc.data();
-              data.id = doc.id;
-              this.books.push(data);
-            }
+            // guardar libros en el array "books"
+            let data = doc.data();
+            data.id = doc.id;
+            this.books.push(data);
           });
 
           /*En caso de que no se encuentren libros que coincidan mostrar el alert con el mensaje:
@@ -376,7 +336,8 @@ export default {
             this.alertMessage =
               "Se Produjo un error, debe iniciar Secion para poder acceder a los libros.";
             this.alert = true;
-          } else {
+          }
+          else{
             alert(error.message);
           }
         });
@@ -385,11 +346,11 @@ export default {
     /**Funcion que cierra la ventana modal con la informacion del libro, para esto mediante un ciclo for se recorre el
      * array correspondiente ("dialog") hasta encontrar la ventana abierta (valor 'true') y procede a cerrarla ('false")
      */
-    closeModal() {
+    closeModal(){
       // Recorrer array
-      for (let i = 0; i < this.dialog.length; i++) {
+      for(let i=0; i < this.dialog.length; i++){
         // Buscar ventan abierta
-        if (this.dialog[i] == true) {
+        if(this.dialog[i] == true){
           // Si esta abierta cerrarla
           this.$set(this.dialog, i, false);
         }
@@ -402,27 +363,27 @@ export default {
      */
     clickRating(item) {
       //  Colocar escala en modo "readonly"
-      this.readonly = true;
+      this.readonly= true;
 
       // Generar nuevos valores
       this.newValues(item);
       // Actualizar en la base de datos
-      firebase
-        .firestore()
-        .collection("libros")
-        .doc(item.id)
-        .update({
-          ratings: this.newRatings,
-          average: this.newAverage,
-        })
-        .catch(function (error) {
-          alert(error.message);
-        });
+       firebase
+         .firestore()
+         .collection("libros")
+         .doc(item.id)
+         .update({
+           ratings: this.newRatings,
+           average: this.newAverage,
+         })
+         .catch(function (error) {
+           alert(error.message);
+         });
     },
 
     /**Funcion que genera el nuevo promedio de calificaciones y el array con todas las calificaiones del libro,
      * resultado de la nueva calificacion daba por el usuario
-     */
+      */
     newValues(item) {
       // Generar nuevo array con todas las calificaiones dadas al libro
       this.newRatings = item.ratings;
@@ -430,14 +391,14 @@ export default {
 
       // Calcular el promedio de todas las calificaciones
       let sum = 0;
-      for (let i = 0; i < this.newRatings.length; i++) {
-        sum = sum + this.newRatings[i];
+      for (let i = 0; i<this.newRatings.length;i++){
+        sum = sum + this.newRatings[i]
       }
-      this.newAverage = sum / this.newRatings.length;
+      this.newAverage = sum / this.newRatings.length
     },
   },
 
-  /**Al cargar la pagina obtener el la caracteristica que se desea buscar (id) y el termino a buscar (name)
+  /**Al cargar la pagina obtener el la caracteristica que se desea buscar (id) y el termino a buscar (name) 
    * y luego llamar la funcion para realizar la consulta a la BBd y obtener los libros.
    */
   created() {

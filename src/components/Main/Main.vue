@@ -22,7 +22,6 @@
               label="Buscar Libros"
               v-model="search"
              @click:append="clickSearch"
-             @keyup.enter="clickSearch"
             >
             </v-text-field>
           </v-col>
